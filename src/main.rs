@@ -1,10 +1,12 @@
 use std::{fs, io::Read};
 
+#[derive(Debug, Clone)]
 enum Author {
     Known(String),
     Unknown,
 }
 
+#[derive(Debug)]
 struct Book {
     name: String,
     description: String,
@@ -22,6 +24,7 @@ impl From<&str> for Author {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 enum OpenBookError {
     InvalidMetadata,
     Unknown,
@@ -33,8 +36,8 @@ impl TryFrom<fs::File> for Book {
         let mut input = String::new();
         value.read_to_string(&mut input).map_err(|_| OpenBookError::Unknown)?;
         let name = input.lines().nth(0).ok_or(OpenBookError::InvalidMetadata)?;
-        let description = input.lines().nth(1).ok_or(OpenBookError::InvalidMetadata)?;
-        let author = input.lines().nth(2).ok_or(OpenBookError::InvalidMetadata)?;
+        let author = input.lines().nth(1).ok_or(OpenBookError::InvalidMetadata)?;
+        let description = input.lines().nth(2).ok_or(OpenBookError::InvalidMetadata)?;
 
         Ok(Book {
             name: name.trim().into(),
@@ -46,5 +49,7 @@ impl TryFrom<fs::File> for Book {
 }
 
 fn main() {
-
+    let file1 = fs::File::open("Books/first.txt").unwrap();
+    let book = Book::try_from(file1);
+    dbg!(&book);
 }
